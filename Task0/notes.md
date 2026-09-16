@@ -175,6 +175,7 @@
     - Fill mean/median/mode or impute
 - **Outlier treatment**
     - Done on continuous numerical data and not on categorical or discrete variables or the label.
+    - If there are many outliers, don't treat them.
     - Interquartile clipping $ \rightarrow [q1 - \lambda \Delta, q3 + \lambda \Delta]$
 - **Duplicate & garbage value treatment**
 - **Encoding**
@@ -188,12 +189,14 @@
 - If the %age of missing values $\geq$ 50%, _delete the column_.
 - `sklearn.impute.KNNImputer().fit_transform(DataFrame, n_neighbors=5)` to impute select columns by taking the average of the neighbors.
 - `object` columns can have garbage values $\rightarrow$ perform `value_counts()` on them to detect.
+- For _binary features_, can add a third value for `NaN` or a new column `feature_is_nan`, or fill it with the **mode**.
 
 ### Scaling & Normalization
 
 #### Scaling
-- We've gotta scale related numeric data to fit in the same range in distance-based algorithms like KNN and SVM.
+- We've gotta scale related _continuous_ numeric data to fit in the same range in distance-based algorithms like KNN and SVM.
 - `mlxtend.preprocessing.minmax_scaling(arr/df/Series, columns: iterable, min_val=0, max_val=1)`
+- **Tip**: only pass the intended columns as the positional argument.
 
 #### Normalization
 - **Normal distribution** (aka **bell curve / Gaussian**): _Equal no._ of observations are on either side of the _mean_.
@@ -201,8 +204,10 @@
 - Algorithms like _linear discriminant analysis (LDA)_ and _Gaussian naive Bayes_ assume normal distribution.
 - Both the shape and range change. _Correlation b/w features_ and the _relative spacing b/w points_ stay unchanged.
 - Mean and median of the data change.
-- `scipy.stats.boxcox(arr/Series)`
-    - All values must be _positive_
+- `scipy.stats.boxcox(arr/Series)[0]`
+    - All values must be _positive_.
+    - For zero-valued features, add a small **constant**.
+- **Tip**: only normalize the **skewed features**.
 
 ### Parsing Dates
 - `pd.to_datetime(Series, format=, infer_datetime_format=False)`
