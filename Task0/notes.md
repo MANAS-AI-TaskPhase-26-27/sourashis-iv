@@ -176,7 +176,7 @@
 - **Outlier treatment**
     - Done on continuous numerical data and not on categorical or discrete variables or the label.
     - If there are many outliers, don't treat them.
-    - Interquartile clipping $ \rightarrow [q1 - \lambda \Delta, q3 + \lambda \Delta]$
+    - Interquartile clipping $\rightarrow [q1 - \lambda \Delta, q3 + \lambda \Delta]$
 - **Duplicate & garbage value treatment**
 - **Encoding**
 
@@ -191,14 +191,20 @@
 - `object` columns can have garbage values $\rightarrow$ perform `value_counts()` on them to detect.
 - For _binary features_, can add a third value for `NaN` or a new column `feature_is_nan`, or fill it with the **mode**.
 
-### Scaling & Normalization
+### Scaling
 
-#### Scaling
+#### Normalization (Min-Max Scaling)
+- $$\frac{x - x_{min}}{x{max} - x{min}}$$
 - We've gotta scale related _continuous_ numeric data to fit in the same range in distance-based algorithms like KNN and SVM.
 - `mlxtend.preprocessing.minmax_scaling(arr/df/Series, columns: iterable, min_val=0, max_val=1)`
 - **Tip**: only pass the intended columns as the positional argument.
 
-#### Normalization
+#### Standardization (Z-Score Scaling)
+- $$\frac{x - x_{mean}}\sigma$$
+- Centers the data to a _mean of 0_ and _standard deviation of 1_.
+- Useful for _linear regression, logistic regression, PCA_.
+
+## Power Transformation
 - **Normal distribution** (aka **bell curve / Gaussian**): _Equal no._ of observations are on either side of the _mean_.
   `Mean = Median` and more _observations are closer_ to the mean.
 - Algorithms like _linear discriminant analysis (LDA)_ and _Gaussian naive Bayes_ assume normal distribution.
@@ -225,4 +231,7 @@
 
 ### Encoding
 - **One hot encoding**: `pd.get_dummies(df/Series, drop_first=True, dtype=bool)`
-- **Label encoding**: Convert to `category` type and `.cat.codes`
+  - for **textual** **nominal data**
+- **Label encoding**:
+  - Convert to `category` type and `.cat.codes`
+  - for **ordinal data**
