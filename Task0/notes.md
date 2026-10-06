@@ -174,9 +174,6 @@
 - **Missing values**
     - Fill mean/median/mode or impute
 - **Outlier treatment**
-    - Done on continuous numerical data and not on categorical or discrete variables or the label.
-    - If there are many outliers, don't treat them.
-    - Interquartile clipping $\rightarrow [q1 - \lambda \Delta, q3 + \lambda \Delta]$
 - **Duplicate & garbage value treatment**
 - **Encoding**
 
@@ -191,6 +188,13 @@
 - `object` columns can have garbage values $\rightarrow$ perform `value_counts()` on them to detect.
 - For _binary features_, can add a third value for `NaN` or a new column `feature_is_nan`, or fill it with the **mode**.
 
+### Outlier Treatment
+- Done on **continuous numerical** data and not on _categorical_ or _discrete_ variables or the label.
+- If there are **many outliers**, don't treat them.
+- **Interquartile clipping** $\rightarrow [q1 - \lambda \Delta, q3 + \lambda \Delta]$
+- **%ile-based clipping** $\rightarrow \text{[1%ile, 99%ile]}$
+- **Z-score-based**: If $z > 3$, it's an outlier
+
 ### Scaling
 
 #### Normalization (Min-Max Scaling)
@@ -198,13 +202,15 @@
 - We've gotta scale related _continuous_ numeric data to fit in the same range in distance-based algorithms like KNN and SVM.
 - `mlxtend.preprocessing.minmax_scaling(arr/df/Series, columns: iterable, min_val=0, max_val=1)`
 - **Tip**: only pass the intended columns as the positional argument.
+- **Mean-based scaling**: $\frac{x - x_{mean}}{x_{max} - x{min}}$
+- **Median-based scaling**: $\frac{x - x_{median}}{x_{max} - x{min}}$
 
 #### Standardization (Z-Score Scaling)
-- $$\frac{x - x_{mean}}\sigma$$
+- $$\frac{x - \mu}\sigma$$
 - Centers the data to a _mean of 0_ and _standard deviation of 1_.
 - Useful for _linear regression, logistic regression, PCA_.
 
-## Power Transformation
+### Power Transformation
 - **Normal distribution** (aka **bell curve / Gaussian**): _Equal no._ of observations are on either side of the _mean_.
   `Mean = Median` and more _observations are closer_ to the mean.
 - Algorithms like _linear discriminant analysis (LDA)_ and _Gaussian naive Bayes_ assume normal distribution.
@@ -218,6 +224,7 @@
 ### Parsing Dates
 - `pd.to_datetime(Series, format=, infer_datetime_format=False)`
     - `format`: _%d, %m, %y, %Y_
+- Can use it for an **elapsed time** feature.
 
 ### Character Encodings
 - `str.encode/bytes.decode(encoding, errors='strict/ignore/replace')` returns `bytes`
@@ -235,3 +242,30 @@
 - **Label encoding**:
   - Convert to `category` type and `.cat.codes`
   - for **ordinal data**
+
+## Evaluation Metrics
+- If I have a _logistic regression_ model, the model predicts a value between _0 and 1_, which is the probability of the mail being a _spam_.
+The **threshold** is the boundary between the **positive** and **negative classes**.
+- The threshold is not simply 0.5 when the **classes are imbalanced** or if the cost of misclassification is not the same for both classes.
+- _Predicted positives/negatives_ can be **true**  or **false**, respectively $\rightarrow$ **confusion matrix**
+- If **actual positives** _(true positives + false negatives)_ is not close to **actual negatives**, the classes are imbalanced.
+- The meaningfulness of a certain evaluation metric is context-dependent.
+
+### Accuracy
+$$\frac{TP+TN}{TP+FN+FP+TN}$$
+- Useless for _imbalanced classes_
+
+### Recall / True Positive Rate
+$$\frac{\text{true positives}}{\text{actual positives}} = \frac{TP}{TP+FN}$$
+- **probability of detection**
+- meaningful when $\text{actual positives} \ll \text{actual negatives}$ and **detection** is more important.
+- **False positive rate**: **probability of false alarm**
+$$\frac{FP}{FP+TN}$$
+- less meaningful when $\text{actual negatives} \ll \text{actual positives}$
+- meaningful when **false alarms** cost more.
+
+### Precision
+$$\frac{TP}{TP+FP}$$
+- less meaningful when $\text{actual positives} \ll \text{actual negatives}$
+- Shows an _inverse relationship_ with _recall_ wrt _threshold_.
+- meaningful when positive predictions need to be accurate.
