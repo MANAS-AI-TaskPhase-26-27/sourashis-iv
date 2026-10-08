@@ -2,4 +2,6 @@
 .venv/
 main.py
 notes/
-data/Task1
+data/Task1/*test.csv
+data/Task1/*train.csv
+data/Task1/*logs.csv
